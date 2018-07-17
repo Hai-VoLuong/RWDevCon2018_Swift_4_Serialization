@@ -9,42 +9,60 @@ import XCTest
 
 // Mars Rover Implementation
 
-struct Sols {
-  var value: Double
-  init(_ value: Double) {
-    self.value = value
-  }
+struct Sols: Codable {
+    
+    var value: Double
+    
+    init(_ value: Double) {
+        self.value = value
+    }
 }
 
-enum Camera {
-  case mahli, mast, navcams, chemcam
+enum Camera: String, Codable {
+    case mahli, mast, navcams, chemcam
 }
 
-struct Photo {
-  var url: URL?
-  var camera: Camera
-  var time: Sols
+struct Photo: Codable {
+    var url: URL?
+    var camera: Camera
+    var time: Sols
 }
 
-struct Rover {
-  var name: String
-  var photos: [Photo]
+struct Rover: Codable {
+    var name: String
+    var photos: [Photo]
 }
 
 // Testing
 
 class Mission1: XCTestCase {
-  let curiosity = Rover(name: "Curiosity", photos:
-    [Photo(url: URL(string:"https://go.nasa.gov/2nquyg9"),
-           camera: .navcams,
-           time: Sols(1949))])
-  
-  func testEncodeDecodeJSON() {
-    XCTFail("not implemented")
-  }
-  
-  func testEncodeDecodePlist() {
-    XCTFail("not implemented")
-  }
+    let curiosity = Rover(name: "Curiosity", photos:[Photo(url: URL(string:"https://go.nasa.gov/2nquyg9"),
+                                                           camera: .navcams,
+                                                           time: Sols(1949))])
+    
+    func testEncodeDecodeJSON() throws {
+        let encoder = JSONEncoder()
+        print("curiosity\n \(curiosity)")
+        let data = try encoder.encode(curiosity)
+        print("encoder\n" + String(data: data, encoding: .utf8)!)
+        
+        let decoder = JSONDecoder()
+        let restored = try decoder.decode(Rover.self, from: data)
+        dump(restored)
+        print("decoder\n \(restored)")
+    }
+    
+    func testEncodeDecodePlist() throws {
+        let encoder = PropertyListEncoder()
+        print("curiosity\n \(curiosity)")
+        encoder.outputFormat = .xml
+        let data = try encoder.encode(curiosity)
+        print("encoder\n" + String(data: data, encoding: .utf8)!)
+        
+        let decoder = PropertyListDecoder()
+        let restored = try decoder.decode(Rover.self, from: data)
+        dump(restored)
+        print("decoder\n \(restored)")
+    }
 }
 
