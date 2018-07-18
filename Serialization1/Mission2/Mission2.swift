@@ -31,16 +31,11 @@ struct Rover: Codable, Equatable {
   var photos: [Photo]
 }
 
-// Test Utilities
-
-/*
 enum TestError: Error {
   case notEqual
   case dataCorrupt
 }
-*/
 
-/*
 func roundTripTest<T: Codable & Equatable>(item: T) throws {
   let encoder = JSONEncoder()
   let data = try encoder.encode(item)
@@ -53,11 +48,12 @@ func roundTripTest<T: Codable & Equatable>(item: T) throws {
     NSLog("Actual")
     dump(restored)
     throw TestError.notEqual
-  }
+  } else {
+    print(item)
+    print(restored)
+    }
 }
-*/
 
-/*
 func archiveTest<T: Codable & Equatable>(json: String, expected: T) throws {
   guard let data = json.data(using: .utf8) else {
     throw TestError.dataCorrupt
@@ -70,12 +66,13 @@ func archiveTest<T: Codable & Equatable>(json: String, expected: T) throws {
     NSLog("Actual")
     dump(restored)
     throw TestError.notEqual
-  }
+  } else {
+    print(expected)
+    print(restored)
+    }
 }
-*/
 
 // Testing
-
 class Mission2: XCTestCase {
   let curiosity = Rover(name: "Curiosity", photos:
     [Photo(url: URL(string:"https://go.nasa.gov/2nquyg9"),
@@ -87,6 +84,7 @@ class Mission2: XCTestCase {
 """
   
   func testCodable() throws {
-    XCTFail()
+    try roundTripTest(item: curiosity)
+    try archiveTest(json: curiosityJSON, expected: curiosity)
   }
 }
